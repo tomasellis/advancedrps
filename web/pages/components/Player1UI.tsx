@@ -113,6 +113,7 @@ const Player1UI = () => {
   const buttons = createButtons();
 
   useEffect(() => {
+    console.log("Setting up PeerJS");
     import("peerjs").then(async ({ default: Peer }) => {
       const initPeer = (): Promise<Peer> =>
         new Promise((resolve, reject) => {
@@ -126,7 +127,9 @@ const Player1UI = () => {
             resolve(peer);
           });
         });
+
       const peer = await initPeer();
+      console.log("Just finished peer", peer);
       setPeerState(peer);
       setPeerId(peer.id);
     });
