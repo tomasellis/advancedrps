@@ -66,7 +66,6 @@ const Player2UI = ({ peerId }: { peerId: string; currentAccount: string }) => {
         conn.send("We are connected!");
         // Receive messages
         conn.on("data", (data) => {
-          console.log(data);
           if (data.address) {
             setContractAddress(data.address);
           }
@@ -122,10 +121,12 @@ const Player2UI = ({ peerId }: { peerId: string; currentAccount: string }) => {
 
         console.log("Sending P2 move...");
         console.log("Weapon", weapon);
+
         const playTx = await RPSContract.play(weapon, {
           value: ethers.utils.parseEther(stake),
           gasLimit: 1_000_000,
         });
+
         await playTx.wait();
 
         console.log("Sent P2 move ---- !");

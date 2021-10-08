@@ -1,5 +1,5 @@
 import { ContractFactory, ethers } from "ethers";
-import { solidityKeccak256 } from "ethers/lib/utils";
+import { arrayify, solidityKeccak256 } from "ethers/lib/utils";
 import Peer from "peerjs";
 import react, { useEffect, useState } from "react";
 import { RPS, RPS__factory } from "../../public/utils";
@@ -8,7 +8,6 @@ import styles from "../../styles/Home.module.css";
 const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
 
 const Player1UI = () => {
-  const SALT = Math.floor(Math.random() * 10);
   const [weapon, setWeapon] = useState<number>(0);
   const [stake, setStake] = useState<string>("");
   const [player2Address, setPlayer2Address] = useState<string>("");
@@ -16,6 +15,18 @@ const Player1UI = () => {
   const [peerId, setPeerId] = useState<string>("");
   const [peerState, setPeerState] = useState<Peer>();
   const [player2Response, setPlayer2Response] = useState<boolean>(false);
+
+  const getRand = () => {
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return arrayify(array);
+  };
+
+  const [salt, setSalt] = useState(getRand());
+
+  useEffect(() => {
+    console.log(salt);
+  }, [salt]);
 
   enum Selection {
     "Null",
@@ -66,13 +77,10 @@ const Player1UI = () => {
           signer
         ) as RPS__factory;
 
-        const p1Hash = solidityKeccak256(["uint8", "uint256"], [weapon, SALT]);
-
+        const p1Hash = solidityKeccak256(["uint8", "uint256"], [weapon, salt]);
+        console.log("Hashing weapon", weapon, "salt", salt);
         const RPSDeployed = await factory.deploy(p1Hash, player2Address, {
-          value: ethers.utils.parseEther(
-            (parseFloat(stake) + 0.001).toString()
-          ),
-          gasLimit: 1_000_000,
+          value: ethers.utils.parseEther(stake),
         });
 
         console.log("Deploying...");
@@ -93,15 +101,15 @@ const Player1UI = () => {
       const { ethereum } = window;
 
       if (ethereum) {
-        console.log("matchaddress", matchAddress);
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const RPSContract = RPS__factory.connect(matchAddress, signer);
+        const RPSContract = await RPS__factory.connect(matchAddress, signer);
 
         console.log("Checking who won");
-        console.log("Bout to send, weapon:", weapon, "salt", SALT);
-        const solveTx = await RPSContract.solve(weapon, SALT);
+        const solveTx = await RPSContract.solve(weapon, salt, {
+          gasLimit: 100_000,
+        });
         await solveTx.wait();
         console.log("Done checking! Check your wallet!");
       } else {

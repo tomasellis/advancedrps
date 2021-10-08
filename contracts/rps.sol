@@ -49,9 +49,9 @@ contract RPS{
      *  @param _salt The salt used when submitting the commitment when the constructor was called.
      */
     function solve(Move _c1, uint256 _salt) {
-        require(c2!=Move.Null); // J2 must have played.
-        require(msg.sender==j1); // J1 can call this.
-        require(keccak256(_c1,_salt)==c1Hash); // Verify the value is the commited one.
+        require(c2!=Move.Null, "c2 move null"); // J2 must have played.
+        require(msg.sender==j1, "msgsender not j1"); // J1 can call this.
+        require(keccak256(_c1,_salt)==c1Hash, "c1hash is not the same"); // Verify the value is the commited one.
         
         // If j1 or j2 throws at fallback it won't get funds and that is his fault.
         // Despite what the warnings say, we should not use transfer as a throwing fallback would be able to block the contract, in case of tie.
