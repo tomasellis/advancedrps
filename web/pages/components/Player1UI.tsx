@@ -70,6 +70,7 @@ const Player1UI = () => {
 
         const RPSDeployed = await factory.deploy(p1Hash, player2Address, {
           value: ethers.utils.parseEther(stake),
+          gasLimit: 1_000_000,
         });
 
         console.log("Deploying...");
