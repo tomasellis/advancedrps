@@ -93,13 +93,11 @@ const Player1UI = () => {
       const { ethereum } = window;
 
       if (ethereum) {
+        console.log("matchaddress", matchAddress);
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const RPSContract = new ethers.Contract(
-          matchAddress,
-          RPS__factory.abi,
-          signer
-        ) as RPS;
+
+        const RPSContract = RPS__factory.connect(matchAddress, signer);
 
         console.log("Checking who won");
         console.log("Bout to send, weapon:", weapon, "salt", SALT);
