@@ -121,6 +121,7 @@ const Player2UI = ({ peerId }: { peerId: string; currentAccount: string }) => {
         ) as RPS;
 
         console.log("Sending P2 move...");
+        console.log("Weapon", weapon);
         const playTx = await RPSContract.play(weapon, {
           value: ethers.utils.parseEther(stake),
           gasLimit: 1_000_000,

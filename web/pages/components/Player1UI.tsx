@@ -69,7 +69,9 @@ const Player1UI = () => {
         const p1Hash = solidityKeccak256(["uint8", "uint256"], [weapon, SALT]);
 
         const RPSDeployed = await factory.deploy(p1Hash, player2Address, {
-          value: ethers.utils.parseEther(stake),
+          value: ethers.utils.parseEther(
+            (parseFloat(stake) + 0.001).toString()
+          ),
           gasLimit: 1_000_000,
         });
 
@@ -100,9 +102,8 @@ const Player1UI = () => {
         ) as RPS;
 
         console.log("Checking who won");
-        const solveTx = await RPSContract.solve(weapon, SALT, {
-          gasLimit: 1_000_000,
-        });
+        console.log("Bout to send, weapon:", weapon, "salt", SALT);
+        const solveTx = await RPSContract.solve(weapon, SALT);
         await solveTx.wait();
         console.log("Done checking! Check your wallet!");
       } else {
