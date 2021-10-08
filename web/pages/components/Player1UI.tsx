@@ -8,7 +8,7 @@ import styles from "../../styles/Home.module.css";
 const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
 
 const Player1UI = () => {
-  const SALT = window.crypto.getRandomValues(new Uint32Array(10))[0];
+  const SALT = Math.floor(Math.random() * 10);
   const [weapon, setWeapon] = useState<number>(0);
   const [stake, setStake] = useState<string>("");
   const [player2Address, setPlayer2Address] = useState<string>("");
