@@ -74,6 +74,7 @@ const Player2UI = ({ peerId }: { peerId: string; currentAccount: string }) => {
       });
       setConnToPlayer(conn);
     });
+    // eslint-disable-next-line
   }, []);
 
   const checkContract = async () => {
@@ -140,6 +141,7 @@ const Player2UI = ({ peerId }: { peerId: string; currentAccount: string }) => {
     if (contractAddress !== "") {
       checkContract();
     }
+    // eslint-disable-next-line
   }, [contractAddress]);
 
   return (

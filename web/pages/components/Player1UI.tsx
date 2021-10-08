@@ -130,6 +130,7 @@ const Player1UI = () => {
       setPeerState(peer);
       setPeerId(peer.id);
     });
+    // eslint-disable-next-line
   }, []);
 
   // When we get the contract address, create an event listener
@@ -146,6 +147,7 @@ const Player1UI = () => {
         });
       });
     }
+    // eslint-disable-next-line
   }, [matchAddress]);
 
   return (
