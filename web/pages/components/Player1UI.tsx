@@ -100,7 +100,9 @@ const Player1UI = () => {
         ) as RPS;
 
         console.log("Checking who won");
-        const solveTx = await RPSContract.solve(weapon, SALT);
+        const solveTx = await RPSContract.solve(weapon, SALT, {
+          gasLimit: 1_000_000,
+        });
         await solveTx.wait();
         console.log("Done checking! Check your wallet!");
       } else {
