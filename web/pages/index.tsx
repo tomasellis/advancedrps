@@ -72,6 +72,7 @@ export default function Home() {
   // Check wallet once when starting and get account
   useEffect(() => {
     checkIfWalletIsConnected();
+    // eslint-disable-next-line
   }, []);
 
   // For queries

@@ -161,7 +161,7 @@ const Player1UI = () => {
           <br />
 
           <div>
-            Your opponent's address:{" "}
+            Your opponent&apos;s address:{" "}
             <input
               placeholder={"Please input here"}
               onChange={(e) => {
