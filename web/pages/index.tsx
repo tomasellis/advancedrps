@@ -28,7 +28,6 @@ export default function Home() {
       const accounts = await ethereum.request({ method: "eth_accounts" });
 
       if (accounts.length !== 0) {
-        console.log("ACCOUNTS", accounts);
         const account = accounts[0];
         console.log("Found an authorized account:", account);
         setCurrentAccount(account);
@@ -87,10 +86,6 @@ export default function Home() {
     msg: "",
     reset: () => setLoading({ ...loading, status: false, msg: "" }),
   });
-
-  useEffect(() => {
-    console.log("QUERYES", router.query);
-  }, [router]);
 
   return (
     <div className={styles.container}>

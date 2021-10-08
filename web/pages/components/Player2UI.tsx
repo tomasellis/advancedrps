@@ -1,19 +1,10 @@
-import { ContractFactory, ethers } from "ethers";
-import { solidityKeccak256 } from "ethers/lib/utils";
-import Peer from "peerjs";
 import react, { useEffect, useState } from "react";
+import { ethers } from "ethers";
 import { RPS, RPS__factory } from "../../public/utils/typechain";
+import Peer from "peerjs";
 import styles from "../../styles/Home.module.css";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
-
-const Player2UI = ({
-  peerId,
-  currentAccount,
-}: {
-  peerId: string;
-  currentAccount: string;
-}) => {
+const Player2UI = ({ peerId }: { peerId: string; currentAccount: string }) => {
   const [weapon, setWeapon] = useState<number>(0);
   const [stake, setStake] = useState<string>("");
   const [contractAddress, setContractAddress] = useState<string>("");
@@ -103,7 +94,6 @@ const Player2UI = ({
         const stakeValue = ethers.utils.formatEther(stakeValueRaw);
 
         setStake(stakeValue);
-        console.log("Setting stake", stakeValue);
       }
     } catch (err) {
       console.log(err);
@@ -129,8 +119,6 @@ const Player2UI = ({
           signer
         ) as RPS;
 
-        console.log("STAKEANDOOOOOo", stake);
-
         console.log("Sending P2 move...");
         const playTx = await RPSContract.play(weapon, {
           value: ethers.utils.parseEther(stake),
@@ -153,6 +141,7 @@ const Player2UI = ({
       checkContract();
     }
   }, [contractAddress]);
+
   return (
     <div className={styles.container}>
       {waitingForPlayer === true ? (

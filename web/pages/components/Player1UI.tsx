@@ -6,9 +6,9 @@ import { RPS, RPS__factory } from "../../public/utils/typechain";
 import styles from "../../styles/Home.module.css";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
-const SALT = 1;
 
 const Player1UI = () => {
+  const SALT = crypto.getRandomValues(new Uint32Array(10))[0];
   const [weapon, setWeapon] = useState<number>(0);
   const [stake, setStake] = useState<string>("");
   const [player2Address, setPlayer2Address] = useState<string>("");
@@ -145,7 +145,6 @@ const Player1UI = () => {
           conn.send({ address: matchAddress });
         });
       });
-      console.log("Set contract address for sendoff");
     }
   }, [matchAddress]);
 
