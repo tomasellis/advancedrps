@@ -1,5 +1,3 @@
-import { BigNumber, utils } from "ethers";
-import { solidityKeccak256 } from "ethers/lib/utils";
 import hre, { ethers } from "hardhat";
 import { RPS__factory } from "../typechain";
 

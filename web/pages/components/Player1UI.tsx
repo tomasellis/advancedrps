@@ -2,7 +2,7 @@ import { ContractFactory, ethers } from "ethers";
 import { solidityKeccak256 } from "ethers/lib/utils";
 import Peer from "peerjs";
 import react, { useEffect, useState } from "react";
-import { RPS, RPS__factory } from "../../public/utils/typechain";
+import { RPS, RPS__factory } from "../../public/static/utils/typechain";
 import styles from "../../styles/Home.module.css";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
