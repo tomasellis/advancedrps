@@ -1,6 +1,6 @@
 import react, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { RPS, RPS__factory } from "../../public/static/utils/typechain";
+import { RPS, RPS__factory } from "../../public/utils";
 import Peer from "peerjs";
 import styles from "../../styles/Home.module.css";
 
