@@ -100,22 +100,24 @@ export default function Home() {
       </Head>
 
       <div className={styles.main}>
-        {loading.status === true ? (
-          <div>{loading.msg}</div>
-        ) : currentAccount === "" ? (
-          <div>
-            <button onClick={() => connectWallet()}>
-              💵 - Click here to connect your wallet!
-            </button>
-          </div>
-        ) : router.query.peerId === undefined ? (
-          <Player1UI />
-        ) : (
-          <Player2UI
-            peerId={router.query.peerId as string}
-            currentAccount={currentAccount}
-          />
-        )}
+        <div className={styles.hud}>
+          {loading.status === true ? (
+            <div>{loading.msg}</div>
+          ) : currentAccount === "" ? (
+            <div>
+              <button onClick={() => connectWallet()}>
+                💵 - Click here to connect your wallet!
+              </button>
+            </div>
+          ) : router.query.peerId === undefined ? (
+            <Player1UI />
+          ) : (
+            <Player2UI
+              peerId={router.query.peerId as string}
+              currentAccount={currentAccount}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

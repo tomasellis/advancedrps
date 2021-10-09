@@ -362,7 +362,7 @@ const Player1UI = () => {
   }, []);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.player1Hud}>
       {timer.status === "idle" ? (
         ""
       ) : (

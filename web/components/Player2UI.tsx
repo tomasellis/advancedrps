@@ -264,7 +264,7 @@ const Player2UI = ({
   }, [contractAddress]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.player2Hud}>
       {timer.status === "idle" ? (
         ""
       ) : (
