@@ -2,8 +2,8 @@ import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/dist/client/router";
-import Player1UI from "./components/Player1UI";
-import Player2UI from "./components/Player2UI";
+import Player1UI from "../components/Player1UI";
+import Player2UI from "../components/Player2UI";
 
 export default function Home() {
   const checkIfWalletIsConnected = async () => {

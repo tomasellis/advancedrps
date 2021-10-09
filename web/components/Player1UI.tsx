@@ -2,8 +2,8 @@ import { ContractFactory, ethers } from "ethers";
 import { arrayify, solidityKeccak256 } from "ethers/lib/utils";
 import Peer from "peerjs";
 import react, { useEffect, useState } from "react";
-import { RPS__factory } from "../../public/utils";
-import styles from "../../styles/Home.module.css";
+import { RPS__factory } from "../public/utils";
+import styles from "../styles/Home.module.css";
 import initPeer from "../utils/initPeer";
 import Timer from "./Timer";
 
@@ -303,6 +303,7 @@ const Player1UI = () => {
           });
         }
       })();
+    // eslint-disable-next-line
   }, [player2Response]);
 
   // Peer js setup, dinamically as to please NextJS

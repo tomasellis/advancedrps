@@ -1,8 +1,8 @@
 import react, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { RPS, RPS__factory } from "../../public/utils";
+import { RPS, RPS__factory } from "../public/utils";
 import Peer from "peerjs";
-import styles from "../../styles/Home.module.css";
+import styles from "../styles/Home.module.css";
 import initPeer from "../utils/initPeer";
 import Timer from "./Timer";
 
@@ -260,6 +260,7 @@ const Player2UI = ({
       });
     }
     return loading.reset();
+    // eslint-disable-next-line
   }, [contractAddress]);
 
   return (
