@@ -53,9 +53,7 @@ type ScreenToDisplay = "WaitingForPlayer1" | "SentWeapon" | "PlayerTimedout";
 // To fix: player WeaponSelection wrongly spaced
 // To fix: Favicon change
 // To fix: Alert on click
-// To fix: Hover and pointer to pick weapon
 // To fix: Timeout for local player
-// To fix: hover:underline a los links de abajo
 // To fix: rejected transaction
 
 const Player2UI = ({
@@ -273,7 +271,7 @@ const Player2UI = ({
 
           {/* This div displays buttons */}
           <div
-            className={"flex-1 flex flex-col w-full"}
+            className={"flex-1 flex flex-col w-full justify-center max-w-2xl"}
             style={{ flexGrow: 0.5 }}
           >
             <WeaponSelector setWeapon={setWeapon} initialWeapon={weapon} />
