@@ -28,7 +28,7 @@ const SingleWeapon = (props: SingleWeaponProps) => {
       onClick={() => {
         props.setSelectedWeapon(props.num);
       }}
-      className="square"
+      className={"singleWeapon"}
       style={{
         display: "flex",
         alignContent: "center",
@@ -36,7 +36,7 @@ const SingleWeapon = (props: SingleWeaponProps) => {
         width: `${boxSize.toString()}px`,
         height: `${boxSize.toString()}px`,
         borderRadius: "50%",
-        backgroundColor: selected === true ? "#FF005C" : "#3D087B",
+        backgroundColor: selected === true ? "#FF005C" : "",
         marginLeft: "10px",
         marginRight: "10px",
         boxShadow: selected === true ? "0px 0px 20px 8px #FF005C" : "",
