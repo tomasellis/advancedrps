@@ -51,10 +51,10 @@ const Timer = ({
   }, [timerState.timer.reset]);
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div style={{ fontSize: "100px" }}>
-        <span>{days}</span>:<span>{hours}</span>:<span>{minutes}</span>:
-        <span>{seconds}</span>
+    <div style={{ textAlign: "center" }} className={"flex-1 flex flex-col"}>
+      <div className={"text-lg"}>
+        <span>{minutes}</span>:<span>{seconds}</span> minutes till opponent
+        timeout
       </div>
     </div>
   );

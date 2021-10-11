@@ -1,9 +1,14 @@
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
-import styles from "../styles/Home.module.css";
 import { useRouter } from "next/dist/client/router";
 import Player1UI from "../components/Player1UI";
 import Player2UI from "../components/Player2UI";
+
+type Loading = {
+  status: boolean;
+  msg: string;
+  reset: () => void;
+};
 
 export default function Home() {
   const checkIfWalletIsConnected = async () => {
@@ -29,7 +34,6 @@ export default function Home() {
 
       if (accounts.length !== 0) {
         const account = accounts[0];
-        console.log("Found an authorized account:", account);
         setCurrentAccount(account);
       } else {
         console.log("No authorized account found");
@@ -57,8 +61,6 @@ export default function Home() {
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
-
-      console.log("Connected", accounts[0]);
 
       setCurrentAccount(accounts[0]);
 
@@ -89,7 +91,7 @@ export default function Home() {
   });
 
   return (
-    <div className={styles.container}>
+    <div style={{ backgroundColor: "#11052C" }} className="flex flex-grow">
       <Head>
         <title>Advanced RPS</title>
         <meta
@@ -97,20 +99,78 @@ export default function Home() {
           content="A site where friendships are ruined"
         />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Righteous&display=swap"
+          rel="stylesheet"
+        ></link>
       </Head>
-
-      <div className={styles.main}>
-        <div className={styles.hud}>
+      <div
+        id="mainDisplay"
+        className="flex flex-row flex-nowrap w-screen h-screen"
+      >
+        <div
+          id="leftDisplay"
+          className="flex-1 flex flex-col flex-grow"
+          style={{ maxWidth: "40%", fontFamily: "Righteous" }}
+        >
+          <div
+            className={"text-8xl relative flex-1 flex flex-col flex-nowrap"}
+            style={{
+              marginTop: "4rem",
+              marginLeft: "6rem",
+              color: "#FFFA83",
+            }}
+          >
+            <span>Rock</span>
+            <span>Paper</span>
+            <span>Scissors</span>
+            <span>Lizard</span>
+            <span>Spock</span>
+          </div>
+        </div>
+        <div
+          id="rightDisplay"
+          style={{ backgroundColor: "#3D087B", fontFamily: "Righteous" }}
+          className="flex-1 flex flex-col h-full w-full"
+        >
           {loading.status === true ? (
-            <div>{loading.msg}</div>
+            <div
+              className={
+                "relative flex-1 flex flex-col flex-nowrap items-center"
+              }
+              style={{
+                paddingTop: "4rem",
+                color: "#FFFA83",
+              }}
+            >
+              {/* This div displays status info */}
+              <div
+                className={"flex-1 flex flex-col w-full  max-w-lg"}
+                style={{ flexGrow: 0.5 }}
+              >
+                <span className={"text-4xl"}>
+                  Now connecting to your wallet.
+                </span>
+                <br />
+                <span className={"text-4xl"}>
+                  Please check to confirm connection.
+                </span>
+              </div>
+            </div>
           ) : currentAccount === "" ? (
-            <div>
-              <button onClick={() => connectWallet()}>
-                💵 - Click here to connect your wallet!
+            <div className="flex-1 flex justify-center items-center">
+              <button
+                onClick={() => connectWallet()}
+                style={{ color: "#FFFA83", backgroundColor: "#FF005C" }}
+                className="w-96 h-14 rounded-md text-xl"
+              >
+                Click here to connect your wallet!
               </button>
             </div>
           ) : router.query.peerId === undefined ? (
-            <Player1UI />
+            <Player1UI accountAddress={currentAccount} />
           ) : (
             <Player2UI
               peerId={router.query.peerId as string}
@@ -122,9 +182,3 @@ export default function Home() {
     </div>
   );
 }
-
-type Loading = {
-  status: boolean;
-  msg: string;
-  reset: () => void;
-};
