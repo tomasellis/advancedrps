@@ -12,7 +12,7 @@ export const externalIcon = (
 
 export const copyPasteIcon = (
   <svg
-    className="w-6 h-6"
+    style={{ width: "1.5rem", height: "1.5rem" }}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"

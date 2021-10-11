@@ -362,7 +362,9 @@ const Player1UI = (props: { accountAddress: string }) => {
                   }}
                   className="rounded-md text-xl flex flex-row px-4 py-3"
                 >
-                  {copyPasteIcon}
+                  <div style={{ width: "1.5rem", height: "1.5rem" }}>
+                    {copyPasteIcon}
+                  </div>
                   <span style={{ marginLeft: "5px" }}>
                     Click and share to connect with another player!
                   </span>
@@ -489,7 +491,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player2Address}`}
                   className={" px-2 flex flex-row text-xs"}
@@ -506,7 +508,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={" px-2 flex flex-row text-xs"}
@@ -622,7 +624,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player2Address}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -639,7 +641,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={"px-2 flex flex-row text-xs"}
