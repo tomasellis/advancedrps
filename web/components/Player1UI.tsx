@@ -423,7 +423,7 @@ const Player1UI = (props: { accountAddress: string }) => {
             ) : (
               <>
                 <span className={"text-4xl"}>
-                  Waiting for Player 2's choice.
+                  Waiting for Player 2&apos;s choice.
                 </span>
                 <br />
               </>
@@ -471,7 +471,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 </div>
                 <br />
                 <div className={"flex flex-col justify-center items-center "}>
-                  <div>Waiting for Player 2's response</div>
+                  <div>Waiting for Player 2&apos;s response</div>
                 </div>
               </div>
             )}
@@ -489,6 +489,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player2Address}`}
                   className={" px-2 flex flex-row text-xs"}
@@ -505,6 +506,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={" px-2 flex flex-row text-xs"}
@@ -593,7 +595,7 @@ const Player1UI = (props: { accountAddress: string }) => {
               </div>
             ) : player2Response === 0 ? (
               <div className={"flex flex-col justify-center items-center"}>
-                <div>Waiting for Player 2's response</div>
+                <div>Waiting for Player 2&apos;s response</div>
               </div>
             ) : winner === "idle" ? (
               <div className={"flex flex-col justify-center items-center"}>
@@ -603,7 +605,7 @@ const Player1UI = (props: { accountAddress: string }) => {
               <div className={"flex flex-col justify-center items-center"}>
                 <NonInteractableWeapon weapon={player2Response} />
                 <br />
-                <div>Player 2's choice</div>
+                <div>Player 2&apos;s choice</div>
               </div>
             )}
           </div>
@@ -620,6 +622,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player2Address}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -636,6 +639,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={"px-2 flex flex-row text-xs"}

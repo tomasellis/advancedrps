@@ -256,7 +256,7 @@ const Player2UI = ({
                 <span className={"text-4xl"}>The match has started!</span>
                 <br />
                 <span className={"text-4xl"}>
-                  Please choose a weapon, if you decide to play you'll be
+                  Please choose a weapon, if you decide to play you&apos;ll be
                   staking {stake} ETH.
                 </span>
               </>
@@ -298,6 +298,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player1Address}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -314,6 +315,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -358,7 +360,7 @@ const Player2UI = ({
             ) : winner === "idle" ? (
               <>
                 <span className={"text-4xl"}>
-                  Waiting for Player 1's confirmation.
+                  Waiting for Player 1&apos;s confirmation.
                 </span>
               </>
             ) : (
@@ -396,13 +398,13 @@ const Player2UI = ({
               </div>
             ) : player1Weapon === 0 ? (
               <div className={"flex flex-col justify-center items-center"}>
-                <div>Waiting for Player 1's response</div>
+                <div>Waiting for Player 1&apos;s response</div>
               </div>
             ) : (
               <div className={"flex flex-col justify-center items-center"}>
                 <NonInteractableWeapon weapon={player1Weapon} />
                 <br />
-                <div>Player 1's choice</div>
+                <div>Player 1&apos;s choice</div>
               </div>
             )}
           </div>
@@ -419,6 +421,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player1Address}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -435,6 +438,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
+                rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={"px-2 flex flex-row text-xs"}

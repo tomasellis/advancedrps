@@ -1,4 +1,3 @@
-import { relative } from "path/posix";
 import React, { useEffect, useState } from "react";
 
 type SingleWeaponProps = {
@@ -16,6 +15,7 @@ const SingleWeapon = (props: SingleWeaponProps) => {
       return setSelected(true);
     }
     return setSelected(false);
+    // eslint-disable-next-line
   }, [props.currentWeapon]);
 
   const boxSize = 120;
