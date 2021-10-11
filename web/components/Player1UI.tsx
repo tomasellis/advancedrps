@@ -17,8 +17,6 @@ type PeerMsg =
   | { _type: "Player2Moved"; weapon: number }
   | { _type: "Winner"; player: Winner }
   | { _type: "Player2Address"; address: string }
-  | { _type: "Stake"; stake: string }
-  | { _type: "TimetoutValue"; timeout: string }
   | { _type: "Player1Address"; address: string }
   | { _type: "Player1Weapon"; weapon: number }
   | { _type: "Connected" };
@@ -135,9 +133,6 @@ const Player1UI = (props: { accountAddress: string }) => {
           };
           connState?.send(msg);
 
-          // Send the stake quantity to peer
-          msg = { _type: "Stake", stake: stake };
-          connState?.send(msg);
           mining.reset();
         })
         .catch((err) => {

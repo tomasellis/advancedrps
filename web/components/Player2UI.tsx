@@ -28,8 +28,6 @@ type PeerMsg =
   | { _type: "Player2Moved"; weapon: number }
   | { _type: "Winner"; player: Winner }
   | { _type: "Player2Address"; address: string }
-  | { _type: "Stake"; stake: string }
-  | { _type: "TimetoutValue"; timeout: string }
   | { _type: "Player1Address"; address: string }
   | { _type: "Player1Weapon"; weapon: number }
   | { _type: "Connected" };
@@ -116,6 +114,25 @@ const Player2UI = ({
           status: "running",
           defaultTime: time,
         });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getStakeQuantity = async (contractAddress: string) => {
+    try {
+      // @ts-ignore
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+
+        const RPSContract = RPS__factory.connect(contractAddress, provider);
+
+        const stake = await RPSContract.stake();
+
+        setStake(ethers.utils.formatEther(stake));
       }
     } catch (err) {
       console.log(err);
@@ -217,8 +234,6 @@ const Player2UI = ({
               return setPlayer1Address(data.address);
             case "ContractAddress":
               return setContractAddress(data.address);
-            case "Stake":
-              return setStake(data.stake);
             case "Player1Weapon":
               return setPlayer1Weapon(data.weapon);
             case "Winner":
@@ -232,6 +247,13 @@ const Player2UI = ({
     })();
     // eslint-disable-next-line
   }, []);
+
+  // Get stake quantity
+  useEffect(() => {
+    (async () => {
+      await getStakeQuantity(contractAddress);
+    })();
+  }, [contractAddress]);
 
   switch (screenToDisplay) {
     case "WaitingForPlayer1":
