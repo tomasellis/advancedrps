@@ -50,6 +50,14 @@ type Mining = {
 
 type ScreenToDisplay = "WaitingForPlayer1" | "SentWeapon" | "PlayerTimedout";
 
+// To fix: player WeaponSelection wrongly spaced
+// To fix: Favicon change
+// To fix: Alert on click
+// To fix: Hover and pointer to pick weapon
+// To fix: Timeout for local player
+// To fix: hover:underline a los links de abajo
+// To fix: rejected transaction
+
 const Player2UI = ({
   peerId,
   currentAccount,
@@ -298,7 +306,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player1Address}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -315,7 +323,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -421,7 +429,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${player1Address}`}
                   className={"px-2 flex flex-row text-xs"}
@@ -438,7 +446,7 @@ const Player2UI = ({
                 ""
               ) : (
                 <a
-                rel="noreferrer"
+                  rel="noreferrer"
                   target="_blank"
                   href={`https://rinkeby.etherscan.io/address/${contractAddress}`}
                   className={"px-2 flex flex-row text-xs"}
