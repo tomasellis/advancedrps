@@ -2,12 +2,13 @@ import { ContractFactory, ethers } from "ethers";
 import { arrayify, solidityKeccak256 } from "ethers/lib/utils";
 import Peer from "peerjs";
 import React, { useEffect, useState } from "react";
-import { RPS__factory } from "../public/utils";
+import { RPS, RPS__factory } from "../public/utils";
 import initPeer from "../utils/initPeer";
 import Timer from "./Timer";
 import WeaponSelector from "./WeaponSelector";
 import NonInteractableWeapon from "./NonInteractableWeapon";
 import { copyPasteIcon, externalIcon } from "../utils/svgIcons";
+import { nanoid } from "nanoid";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
 
@@ -51,6 +52,11 @@ type ScreenToDisplay =
   | "Player2Decided"
   | "PlayerTimedout";
 
+interface Deployed extends RPS {
+  code: number;
+  message: string;
+}
+
 const Player1UI = (props: { accountAddress: string }) => {
   const INITIAL_STAKE = "0.001";
   const [weapon, setWeapon] = useState<number>(0);
@@ -91,60 +97,56 @@ const Player1UI = (props: { accountAddress: string }) => {
     weapon: number,
     player2Address: string
   ) => {
-    try {
-      // @ts-ignore
-      const { ethereum } = window;
+    // @ts-ignore
+    const { ethereum } = window;
 
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
 
-        const factory = new ContractFactory(
-          RPS__factory.abi,
-          RPS__factory.bytecode,
-          signer
-        ) as RPS__factory;
+      const factory = new ContractFactory(
+        RPS__factory.abi,
+        RPS__factory.bytecode,
+        signer
+      ) as RPS__factory;
 
-        // Setup salt
-        const saltVar = getRand();
-        setSalt(saltVar);
+      // Setup salt
+      const saltVar = getRand();
+      setSalt(saltVar);
 
-        const p1Hash = solidityKeccak256(
-          ["uint8", "uint256"],
-          [weapon, saltVar]
-        );
+      const p1Hash = solidityKeccak256(["uint8", "uint256"], [weapon, saltVar]);
 
-        const RPSDeployed = await factory.deploy(p1Hash, player2Address, {
+      setMining({ ...mining, status: "mining" });
+
+      factory
+        .deploy(p1Hash, player2Address, {
           value: ethers.utils.parseEther(stake),
+        })
+        .then(async (RPSDeployed) => {
+          await RPSDeployed.deployed();
+
+          setContractAddress(RPSDeployed.address);
+          await getTimeSinceLastAction(RPSDeployed.address);
+
+          // Send the contract address to peer
+          let msg: PeerMsg = {
+            _type: "ContractAddress",
+            address: RPSDeployed.address,
+          };
+          connState?.send(msg);
+
+          // Send the stake quantity to peer
+          msg = { _type: "Stake", stake: stake };
+          connState?.send(msg);
+          mining.reset();
+        })
+        .catch((err) => {
+          if (err.code === 4001) alert("You cancelled the transaction");
+          console.log("createMatchErr", err);
+          mining.reset();
         });
-
-        setMining({
-          ...mining,
-          status: "mining",
-        });
-        await RPSDeployed.deployed();
-
-        mining.reset();
-
-        setContractAddress(RPSDeployed.address);
-
-        getTimeSinceLastAction(RPSDeployed.address);
-
-        // Send the contract address to peer
-        let msg: PeerMsg = {
-          _type: "ContractAddress",
-          address: RPSDeployed.address,
-        };
-        connState?.send(msg);
-
-        // Send the stake quantity to peer
-        msg = { _type: "Stake", stake: stake };
-        connState?.send(msg);
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
+    } else {
+      console.log("Ethereum object doesn't exist!");
     }
   };
 
@@ -182,29 +184,38 @@ const Player1UI = (props: { accountAddress: string }) => {
   };
 
   const checkWhoWon = async () => {
-    try {
-      setMining({ ...mining, status: "mining" });
-      // @ts-ignore
-      const { ethereum } = window;
+    setMining({ ...mining, status: "mining" });
+    // @ts-ignore
+    const { ethereum } = window;
 
-      if (ethereum && salt) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
+    if (ethereum && salt) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
 
-        const RPSContract = await RPS__factory.connect(contractAddress, signer);
+      const RPSContract = await RPS__factory.connect(contractAddress, signer);
 
-        const solveTx = await RPSContract.solve(weapon, salt, {
-          gasLimit: 100_000,
+      RPSContract.solve(weapon, salt, {
+        gasLimit: 100_000,
+      })
+        .then(async (tx) => {
+          await tx.wait();
+          const actualWinner = decideWinnerLocally(weapon, player2Response);
+          setWinner(actualWinner);
+          if (actualWinner !== "idle") {
+            let msg: PeerMsg = { _type: "Winner", player: actualWinner };
+            connState?.send(msg);
+            msg = { _type: "Player1Weapon", weapon: weapon };
+            connState?.send(msg);
+            mining.reset();
+          }
+        })
+        .catch((err) => {
+          if (err.code === 4001) alert("You cancelled the transaction");
+          console.log("checkWhoWon", err);
+          mining.reset();
         });
-
-        await solveTx.wait();
-
-        mining.reset();
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
+    } else {
+      console.log("Ethereum object doesn't exist!");
     }
   };
 
@@ -219,25 +230,27 @@ const Player1UI = (props: { accountAddress: string }) => {
   };
 
   const player2Timedout = async () => {
-    try {
-      setScreenToDisplay("PlayerTimedout");
-      //@ts-ignore
-      const { ethereum } = window;
+    setScreenToDisplay("PlayerTimedout");
+    //@ts-ignore
+    const { ethereum } = window;
 
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
 
-      const contract = RPS__factory.connect(contractAddress, signer);
+    const contract = RPS__factory.connect(contractAddress, signer);
 
-      setMining({ ...mining, status: "mining" });
-      const timeoutTx = await contract.j2Timeout();
-
-      await timeoutTx.wait();
-
-      mining.reset();
-    } catch (err) {
-      console.log(err);
-    }
+    setMining({ ...mining, status: "mining" });
+    contract
+      .j2Timeout()
+      .then(async (tx) => {
+        await tx.wait();
+        mining.reset();
+      })
+      .catch((err) => {
+        if (err.code === 4001) alert("You cancelled the transaction");
+        console.log("player2Timedout", err);
+        mining.reset();
+      });
   };
 
   // Peer js setup, dinamically as to please NextJS
@@ -245,12 +258,13 @@ const Player1UI = (props: { accountAddress: string }) => {
     console.log("Trying to reach PeerJS servers");
     const asyncFn = async () => {
       console.log("Trying to create Peer");
-      const peer = await initPeer();
+      const id = `advancedRPS-${nanoid()}`;
+      const peer = await initPeer(id);
 
       // Save own peer id
       setPeerId(peer.id);
 
-      peer.on("open", (id) => {});
+      peer.on("open", () => {});
 
       peer.on("error", (e) => console.log("ERROR", e));
 
@@ -300,14 +314,6 @@ const Player1UI = (props: { accountAddress: string }) => {
       (async () => {
         // Fix loading
         await checkWhoWon();
-        const actualWinner = decideWinnerLocally(weapon, player2Response);
-        setWinner(actualWinner);
-        if (actualWinner !== "idle") {
-          let msg: PeerMsg = { _type: "Winner", player: actualWinner };
-          connState?.send(msg);
-          msg = { _type: "Player1Weapon", weapon: weapon };
-          connState?.send(msg);
-        }
       })();
     // eslint-disable-next-line
   }, [player2Response]);

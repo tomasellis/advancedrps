@@ -50,7 +50,6 @@ type Mining = {
 
 type ScreenToDisplay = "WaitingForPlayer1" | "SentWeapon" | "PlayerTimedout";
 
-// To fix: player WeaponSelection wrongly spaced
 // To fix: Favicon change
 // To fix: Alert on click
 // To fix: Timeout for local player
@@ -123,6 +122,74 @@ const Player2UI = ({
     }
   };
 
+  const sendWeaponChoice = async (
+    weapon: number,
+    contractAddress: string,
+    stake: string
+  ) => {
+    setScreenToDisplay("SentWeapon");
+    setMining({ ...mining, status: "mining" });
+
+    // @ts-ignore
+    const { ethereum } = window;
+
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      const RPSContract = new ethers.Contract(
+        contractAddress,
+        RPS__factory.abi,
+        signer
+      ) as RPS;
+
+      // Provide feedback
+
+      RPSContract.play(weapon, {
+        value: ethers.utils.parseEther(stake),
+        gasLimit: 1_000_000,
+      })
+        .then(async (tx) => {
+          await tx.wait();
+          mining.reset();
+          getTimeSinceLastAction(contractAddress);
+          let msg: PeerMsg = { _type: "Player2Moved", weapon: weapon };
+          connToPlayer?.send(msg);
+        })
+        .catch((err) => {
+          if (err.code === 4001) alert("You cancelled the transaction");
+          console.log("sendWeapon", err);
+        });
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  };
+
+  const player1Timedout = async () => {
+    setScreenToDisplay("PlayerTimedout");
+    //@ts-ignore
+    const { ethereum } = window;
+
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+
+    const contract = RPS__factory.connect(contractAddress, signer);
+
+    setMining({ ...mining, status: "idle" });
+
+    contract
+      .j1Timeout()
+      .then(async (tx) => {
+        await tx.wait();
+        mining.reset();
+      })
+      .catch((err) => {
+        if (err.code === 4001) alert("You cancelled the transaction");
+        console.log("player1Timedout", err);
+        mining.reset();
+      });
+  };
+
   // PeerJS setup for communication with P1
   useEffect(() => {
     (async () => {
@@ -165,74 +232,6 @@ const Player2UI = ({
     })();
     // eslint-disable-next-line
   }, []);
-
-  const sendWeaponChoice = async (
-    weapon: number,
-    contractAddress: string,
-    stake: string
-  ) => {
-    try {
-      setScreenToDisplay("SentWeapon");
-      setMining({ ...mining, status: "mining" });
-
-      // @ts-ignore
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-
-        const RPSContract = new ethers.Contract(
-          contractAddress,
-          RPS__factory.abi,
-          signer
-        ) as RPS;
-
-        // Provide feedback
-
-        const playTx = await RPSContract.play(weapon, {
-          value: ethers.utils.parseEther(stake),
-          gasLimit: 1_000_000,
-        });
-
-        await playTx.wait();
-
-        mining.reset();
-
-        getTimeSinceLastAction(contractAddress);
-
-        let msg: PeerMsg = { _type: "Player2Moved", weapon: weapon };
-        connToPlayer?.send(msg);
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const player1Timedout = async () => {
-    try {
-      setScreenToDisplay("PlayerTimedout");
-      //@ts-ignore
-      const { ethereum } = window;
-
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-
-      const contract = RPS__factory.connect(contractAddress, signer);
-
-      setMining({ ...mining, status: "idle" });
-
-      const timeoutTx = await contract.j1Timeout();
-
-      await timeoutTx.wait();
-
-      mining.reset();
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   switch (screenToDisplay) {
     case "WaitingForPlayer1":
@@ -293,7 +292,7 @@ const Player2UI = ({
           </div>
           {/* This div displays additional info */}
           <div
-            className={"flex-1 flex flex-row w-full "}
+            className={"flex-1 flex flex-row w-full pl-10 "}
             style={{ flexGrow: 0.2, maxHeight: "100px" }}
           >
             <div
@@ -394,7 +393,7 @@ const Player2UI = ({
               <div>Your choice</div>
             </div>
             <br />
-            <div className={"flex items-center mx-4"}>
+            <div className={"flex items-center mx-4  pl-10 "}>
               <span>vs</span>
             </div>
             <br />
