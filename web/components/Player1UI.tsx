@@ -9,12 +9,12 @@ import WeaponSelector from "./WeaponSelector";
 import NonInteractableWeapon from "./NonInteractableWeapon";
 import { copyPasteIcon, externalIcon } from "../utils/svgIcons";
 import { nanoid } from "nanoid";
+import { useInterval } from "../utils/useInterval";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000";
 
 type PeerMsg =
   | { _type: "ContractAddress"; address: string }
-  | { _type: "Player2Moved"; weapon: number }
   | { _type: "Winner"; player: Winner }
   | { _type: "Player2Address"; address: string }
   | { _type: "Player1Address"; address: string }
@@ -50,20 +50,22 @@ type ScreenToDisplay =
   | "Player2Decided"
   | "PlayerTimedout";
 
-interface Deployed extends RPS {
-  code: number;
-  message: string;
-}
+type BlockchainInfo = {
+  p1Moved: boolean;
+  p2Moved: boolean;
+  p2BlockchainMove: number;
+};
 
 const Player1UI = (props: { accountAddress: string }) => {
   const INITIAL_STAKE = "0.001";
+  const [salt, setSalt] = useState<Uint8Array | null>();
+  const [peerId, setPeerId] = useState<string>("");
+  const [connState, setConnState] = useState<Peer.DataConnection>();
   const [weapon, setWeapon] = useState<number>(0);
   const [stake, setStake] = useState<string>(INITIAL_STAKE);
   const [player2Address, setPlayer2Address] = useState<string>("");
-  const [contractAddress, setContractAddress] = useState<string>("");
-  const [peerId, setPeerId] = useState<string>("");
-  const [connState, setConnState] = useState<Peer.DataConnection>();
   const [player2Response, setPlayer2Response] = useState<number>(0);
+  const [contractAddress, setContractAddress] = useState<string>("");
   const [mining, setMining] = useState<Mining>({
     status: "idle",
     reset: () => {
@@ -71,17 +73,21 @@ const Player1UI = (props: { accountAddress: string }) => {
     },
   });
   const [winner, setWinner] = useState<Winner>("idle");
-  const [salt, setSalt] = useState<Uint8Array | null>();
   const [timer, setTimer] = useState<TimerType>({
     status: "idle",
     defaultTime: new Date(),
     expired: false,
     reset: false,
   });
-
   const [screenToDisplay, setScreenToDisplay] = useState<ScreenToDisplay>(
     "WaitingForP2Connection"
   );
+
+  const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo>({
+    p1Moved: false,
+    p2Moved: false,
+    p2BlockchainMove: 0,
+  });
 
   const win = (_c1: Selection, _c2: Selection) => {
     if (_c1 == _c2) return "draw";
@@ -144,6 +150,48 @@ const Player1UI = (props: { accountAddress: string }) => {
       console.log("Ethereum object doesn't exist!");
     }
   };
+
+  const pollBlockchainInfo = async (contractAddress: string) => {
+    try {
+      // @ts-ignore
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+
+        const RPSContract = RPS__factory.connect(contractAddress, provider);
+
+        const c1 = await RPSContract.c1Hash();
+        const c2 = await RPSContract.c2();
+
+        if (c1 !== "") {
+          setBlockchainInfo({ ...blockchainInfo, p1Moved: true });
+        }
+
+        if (c2 !== 0) {
+          setBlockchainInfo({
+            ...blockchainInfo,
+            p2Moved: true,
+            p2BlockchainMove: c2,
+          });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Check if player 2 plays
+  useEffect(() => {
+    if (
+      blockchainInfo.p2Moved === true &&
+      screenToDisplay !== "Player2Decided"
+    ) {
+      setTimer({ ...timer, expired: false, status: "idle" });
+      setScreenToDisplay("Player2Decided");
+      return setPlayer2Response(blockchainInfo.p2BlockchainMove);
+    }
+  }, [blockchainInfo]);
 
   const getTimeSinceLastAction = async (contractAddress: string) => {
     try {
@@ -284,11 +332,6 @@ const Player1UI = (props: { accountAddress: string }) => {
             case "Connected":
               return setScreenToDisplay("Player2Connected");
 
-            case "Player2Moved":
-              setTimer({ ...timer, expired: false, status: "idle" });
-              setScreenToDisplay("Player2Decided");
-              return setPlayer2Response(data.weapon);
-
             case "Player2Address":
               setTimer({ ...timer, expired: false, status: "idle" });
               return setPlayer2Address(data.address);
@@ -326,6 +369,13 @@ const Player1UI = (props: { accountAddress: string }) => {
       }, 0);
     }
   }, [screenToDisplay]);
+
+  // Scheduled information update with blockchain
+  useInterval(async () => {
+    if (contractAddress !== "") {
+      pollBlockchainInfo(contractAddress);
+    }
+  }, 1000);
 
   switch (screenToDisplay) {
     default:
@@ -392,8 +442,9 @@ const Player1UI = (props: { accountAddress: string }) => {
             <br />
             {mining.status === "mining" ? (
               <>
+                <span className={"text-4xl"}>Please check your wallet.</span>
                 <span className={"text-4xl"}>
-                  Deploying contract to the blockchain!
+                  Confirm deploying contract to the blockchain!
                 </span>
                 <br />
               </>
@@ -545,9 +596,8 @@ const Player1UI = (props: { accountAddress: string }) => {
           >
             {mining.status === "mining" ? (
               <>
-                <span className={"text-4xl"}>
-                  Mining. Please check your wallet.
-                </span>
+                {/* FIX */}
+                <span className={"text-4xl"}>Please check your wallet.</span>
                 <br />
                 <span className={"text-4xl"}>
                   Confirm pinging the blockchain to decide winner.

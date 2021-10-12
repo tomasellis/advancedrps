@@ -7,6 +7,7 @@ import Timer from "./Timer";
 import WeaponSelector from "./WeaponSelector";
 import { externalIcon } from "../utils/svgIcons";
 import NonInteractableWeapon from "./NonInteractableWeapon";
+import { useInterval } from "../utils/useInterval";
 
 type Loading = {
   status: "loading" | "idle";
@@ -14,18 +15,8 @@ type Loading = {
   reset: () => void;
 };
 
-enum Selection {
-  "Null",
-  "Rock",
-  "Paper",
-  "Scissors",
-  "Spock",
-  "Lizard",
-}
-
 type PeerMsg =
   | { _type: "ContractAddress"; address: string }
-  | { _type: "Player2Moved"; weapon: number }
   | { _type: "Winner"; player: Winner }
   | { _type: "Player2Address"; address: string }
   | { _type: "Player1Address"; address: string }
@@ -48,6 +39,13 @@ type Mining = {
 
 type ScreenToDisplay = "WaitingForPlayer1" | "SentWeapon" | "PlayerTimedout";
 
+type BlockchainInfo = {
+  p1Moved: boolean;
+  p2Moved: boolean;
+  p2BlockchainMove: number;
+  stake: string;
+};
+
 // To fix: Favicon change
 // To fix: Alert on click
 // To fix: Timeout for local player
@@ -66,9 +64,7 @@ const Player2UI = ({
   const [player1Address, setPlayer1Address] = useState<string>("");
   const [player1Weapon, setPlayer1Weapon] = useState<number>(0);
   const [connToPlayer, setConnToPlayer] = useState<Peer.DataConnection>();
-  const [winner, setWinner] = useState<"P1" | "P2" | "no one, a draw" | "idle">(
-    "idle"
-  );
+  const [winner, setWinner] = useState<Winner>("idle");
   const [screenToDisplay, setScreenToDisplay] =
     useState<ScreenToDisplay>("WaitingForPlayer1");
 
@@ -82,6 +78,13 @@ const Player2UI = ({
     defaultTime: new Date(),
     expired: false,
     reset: false,
+  });
+
+  const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo>({
+    p1Moved: false,
+    p2Moved: false,
+    p2BlockchainMove: 0,
+    stake: "",
   });
 
   const getTimeSinceLastAction = async (contractAddress: string) => {
@@ -120,25 +123,6 @@ const Player2UI = ({
     }
   };
 
-  const getStakeQuantity = async (contractAddress: string) => {
-    try {
-      // @ts-ignore
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-
-        const RPSContract = RPS__factory.connect(contractAddress, provider);
-
-        const stake = await RPSContract.stake();
-
-        setStake(ethers.utils.formatEther(stake));
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const sendWeaponChoice = async (
     weapon: number,
     contractAddress: string,
@@ -170,12 +154,10 @@ const Player2UI = ({
           await tx.wait();
           mining.reset();
           getTimeSinceLastAction(contractAddress);
-          let msg: PeerMsg = { _type: "Player2Moved", weapon: weapon };
-          connToPlayer?.send(msg);
         })
         .catch((err) => {
           if (err.code === 4001) alert("You cancelled the transaction");
-          console.log("sendWeapon", err);
+          console.log("sendWeaponErr", err);
         });
     } else {
       console.log("Ethereum object doesn't exist!");
@@ -205,6 +187,44 @@ const Player2UI = ({
         console.log("player1Timedout", err);
         mining.reset();
       });
+  };
+
+  const pollBlockchainInfo = async (contractAddress: string) => {
+    try {
+      // @ts-ignore
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+
+        const RPSContract = RPS__factory.connect(contractAddress, provider);
+
+        if (blockchainInfo.p1Moved === false) {
+          const c1 = await RPSContract.c1Hash();
+          if (c1 !== "")
+            setBlockchainInfo({ ...blockchainInfo, p1Moved: true });
+        }
+
+        if (blockchainInfo.p2Moved === false) {
+          const c2 = await RPSContract.c2();
+          if (c2 !== 0)
+            setBlockchainInfo({
+              ...blockchainInfo,
+              p2Moved: true,
+              p2BlockchainMove: c2,
+            });
+        }
+
+        const stake = await RPSContract.stake();
+        setBlockchainInfo({
+          ...blockchainInfo,
+          stake: ethers.utils.formatEther(stake),
+        });
+        setStake(ethers.utils.formatEther(stake));
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // PeerJS setup for communication with P1
@@ -248,12 +268,12 @@ const Player2UI = ({
     // eslint-disable-next-line
   }, []);
 
-  // Get stake quantity
-  useEffect(() => {
-    (async () => {
-      await getStakeQuantity(contractAddress);
-    })();
-  }, [contractAddress]);
+  // Scheduled information update with blockchain
+  useInterval(async () => {
+    if (contractAddress !== "") {
+      pollBlockchainInfo(contractAddress);
+    }
+  }, 1000);
 
   switch (screenToDisplay) {
     case "WaitingForPlayer1":
@@ -390,7 +410,7 @@ const Player2UI = ({
                   Waiting for Player 1&apos;s confirmation.
                 </span>
               </>
-            ) : (
+            ) : contractAddress !== "" && blockchainInfo.stake !== "" ? (
               <>
                 <span className={"text-4xl"}>The match has ended.</span>
                 <br />
@@ -402,6 +422,8 @@ const Player2UI = ({
                     : "No one won. Get those spirits up, thanks for playing!"}
                 </span>
               </>
+            ) : (
+              ""
             )}
           </div>
           {/* This div displays buttons */}
@@ -427,12 +449,14 @@ const Player2UI = ({
               <div className={"flex flex-col justify-center items-center"}>
                 <div>Waiting for Player 1&apos;s response</div>
               </div>
-            ) : (
+            ) : blockchainInfo.stake === "0.0" ? (
               <div className={"flex flex-col justify-center items-center"}>
                 <NonInteractableWeapon weapon={player1Weapon} />
                 <br />
                 <div>Player 1&apos;s choice</div>
               </div>
+            ) : (
+              ""
             )}
           </div>
           {/* This div displays additional info */}
