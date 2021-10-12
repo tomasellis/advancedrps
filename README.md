@@ -7,6 +7,9 @@ With this Web3 app two players bash it out in a high stakes, high reward, high o
 
 [You can check it out here!](https://advancedrps.tomasellis.dev/) Please make sure to use Metamask and the Rinkeby testnet.
 
-The RPS contract wasn't written by me.
+# Acknowledgements
+
+The RPS contract wasn't written by me, I deploy and interact with it. 
+Go check out the author Clément Lesaege - <clement@lesaege.com> 's stuff.
 
 TODO: actual readme.
