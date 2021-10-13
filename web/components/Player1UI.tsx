@@ -373,6 +373,7 @@ const Player1UI = (props: { accountAddress: string }) => {
   // Scheduled information update with blockchain
   useInterval(async () => {
     if (contractAddress !== "") {
+      console.log(salt, "salt");
       pollBlockchainInfo(contractAddress);
     }
   }, 1000);

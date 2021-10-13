@@ -410,7 +410,7 @@ const Player2UI = ({
                   Waiting for Player 1&apos;s confirmation.
                 </span>
               </>
-            ) : contractAddress !== "" && blockchainInfo.stake !== "" ? (
+            ) : contractAddress !== "" && blockchainInfo.stake === "0.0" ? (
               <>
                 <span className={"text-4xl"}>The match has ended.</span>
                 <br />
@@ -445,15 +445,23 @@ const Player2UI = ({
               <div className={"flex flex-col justify-center items-center"}>
                 <div>Waiting for the blockchain</div>
               </div>
+            ) : blockchainInfo.stake === "0.0" ? (
+              player1Weapon === 0 ? (
+                <div className={"flex flex-col justify-center items-center"}>
+                  <div className={"flex flex-col justify-center items-center"}>
+                    <div>Player 1&apos;s choice</div>
+                  </div>
+                </div>
+              ) : (
+                <div className={"flex flex-col justify-center items-center"}>
+                  <NonInteractableWeapon weapon={player1Weapon} />
+                  <br />
+                  <div>Player 1&apos;s choice</div>
+                </div>
+              )
             ) : player1Weapon === 0 ? (
               <div className={"flex flex-col justify-center items-center"}>
                 <div>Waiting for Player 1&apos;s response</div>
-              </div>
-            ) : blockchainInfo.stake === "0.0" ? (
-              <div className={"flex flex-col justify-center items-center"}>
-                <NonInteractableWeapon weapon={player1Weapon} />
-                <br />
-                <div>Player 1&apos;s choice</div>
               </div>
             ) : (
               ""
