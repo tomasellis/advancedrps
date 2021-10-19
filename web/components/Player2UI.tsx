@@ -437,7 +437,7 @@ const Player2UI = ({
               <div>Your choice</div>
             </div>
             <br />
-            <div className={"flex items-center mx-4  pl-10 "}>
+            <div className={"flex items-center mx-4 mt-36 pl-10 "}>
               <span>vs</span>
             </div>
             <br />

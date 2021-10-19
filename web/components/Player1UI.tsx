@@ -80,7 +80,7 @@ const Player1UI = (props: { accountAddress: string }) => {
     reset: false,
   });
   const [screenToDisplay, setScreenToDisplay] = useState<ScreenToDisplay>(
-    "WaitingForP2Connection"
+    "Player2Decided" // DEV: WaitingForP2Connectino
   );
 
   const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo>({
@@ -521,7 +521,7 @@ const Player1UI = (props: { accountAddress: string }) => {
                   <div>Your choice</div>
                 </div>
                 <br />
-                <div className={"flex items-center mx-4"}>
+                <div className={"flex items-center mx-4 mt-36"}>
                   <span>vs</span>
                 </div>
                 <br />
@@ -639,7 +639,7 @@ const Player1UI = (props: { accountAddress: string }) => {
               <div>Your choice</div>
             </div>
             <br />
-            <div className={"flex items-center mx-4"}>
+            <div className={"flex items-center mx-4 mt-36"}>
               <span>vs</span>
             </div>
             <br />
