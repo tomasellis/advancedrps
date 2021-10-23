@@ -80,7 +80,7 @@ const Player1UI = (props: { accountAddress: string }) => {
     reset: false,
   });
   const [screenToDisplay, setScreenToDisplay] = useState<ScreenToDisplay>(
-    "Player2Decided" // DEV: WaitingForP2Connectino
+    "WaitingForP2Connection" // DEV: WaitingForP2Connectino
   );
 
   const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo>({
