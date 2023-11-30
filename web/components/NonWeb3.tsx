@@ -10,7 +10,7 @@ type Loading = {
     msg: string;
     reset: () => void;
     start: boolean
-  };
+};
 
 const NonWeb3 = (props: any) => {
 
@@ -22,13 +22,13 @@ const NonWeb3 = (props: any) => {
         reset: () => setLoading({ ...loading, status: false, msg: "" }),
         start: false
     });
-    
+
     // For queries
     const router = useRouter();
-    
+
     // Start game
-    const startGame = ( ) => {
-      setLoading({...loading, start: true})
+    const startGame = () => {
+        setLoading({ ...loading, start: true })
     }
 
     return <>
@@ -42,41 +42,41 @@ const NonWeb3 = (props: any) => {
                         style={{ color: "#FFFA83", backgroundColor: "#FF005C" }}
                         className="w-96 h-14 rounded-md text-xl"
                     >
-                        Let's start!
+                        Let&apos;s start!
                     </button>
                 </div>
             ) : (<Player1UI />)
-            
-            
-            
-            
-             
 
-        /* loading.status === true ? (
-            <div
-                className={
-                    "relative flex-1 flex flex-col flex-nowrap items-center"
-                }
-                style={{
-                    paddingTop: "4rem",
-                    color: "#FFFA83",
-                }}
-            >
+
+
+
+
+
+            /* loading.status === true ? (
                 <div
-                    className={"flex-1 flex flex-col w-full  max-w-lg"}
-                    style={{ flexGrow: 0.5 }}
+                    className={
+                        "relative flex-1 flex flex-col flex-nowrap items-center"
+                    }
+                    style={{
+                        paddingTop: "4rem",
+                        color: "#FFFA83",
+                    }}
                 >
-                    <span className={"text-4xl"}>
-                        Now connecting to your wallet.
-                    </span>
-                    <br />
-                    <span className={"text-4xl"}>
-                        Please check to confirm connection.
-                    </span>
+                    <div
+                        className={"flex-1 flex flex-col w-full  max-w-lg"}
+                        style={{ flexGrow: 0.5 }}
+                    >
+                        <span className={"text-4xl"}>
+                            Now connecting to your wallet.
+                        </span>
+                        <br />
+                        <span className={"text-4xl"}>
+                            Please check to confirm connection.
+                        </span>
+                    </div>
                 </div>
-            </div>
-            */
-       }
+                */
+        }
 
 
 

@@ -338,20 +338,20 @@ const Player2UI = ({
           </div>
           {/* This div displays buttons */}
           <div
-            className={"flex-1 flex flex-row w-full justify-center max-w-2xl"}
+            className={"flex-1 flex flex-row w-full justify-center max-w-2xl select-none"}
             style={{ flexGrow: 1 }}
           >
-            <div className={"flex flex-col justify-center items-center select-none"}>
+            <div className={"flex flex-col justify-center items-center"}>
               <NonInteractableWeapon weapon={weapon} />
               <br />
               <div>You</div>
             </div>
             <br />
-            <div className={"flex items-center mx-4 mt-36 select-none"}>
+            <div className={"flex items-center mx-4 mt-36 "}>
               <span>vs</span>
             </div>
             <br />
-            <div className={"flex flex-col justify-center items-center select-none"}>
+            <div className={"flex flex-col justify-center items-center "}>
               <NonInteractableWeapon weapon={player1Weapon} />
               <br />
               <div>Player 1</div>
